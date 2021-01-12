@@ -1,9 +1,9 @@
 Team Contract
 ================
+ Date: 2021-11-01
 
 ## Group Number 5: “Dash of Spice”
-
-This document outlines the expectations discussed and agreed upon by the team members. It is subject to change as the team learns what is working well and what is not.
+This document outlines the expectations discussed and agreed upon by the team members of group 5 for the DSCI 532 MDS course. It is subject to change as the team learns what is working well and what is not.
 
 ## Table of Contents
 
