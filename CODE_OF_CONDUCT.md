@@ -33,7 +33,7 @@ We as the project contributors and maintainers shall not apply any technique (co
 
 ### 3a. Transparency as a duty
 
-We as the project contributors and maintainers will strive for transparency within as wide a forum as allowable by legal and proprietary constraints. The data scientist will not withhold concerns or potential limitations form colleagues.
+We as the project contributors and maintainers will strive for transparency within as wide a forum as allowable by legal and proprietary constraints. The data scientist will not withhold concerns or potential limitations from colleagues.
 
 ## Working with others
 
