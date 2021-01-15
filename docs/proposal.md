@@ -1,6 +1,7 @@
 # Dash-of-Spice: Happiness Navigator Proposal
 
 ## Motivation and Purpose
+
 Our Role: Data scientists working for an immigration consulting company
 
 Target Audience: Families and individuals looking to move to a new
@@ -19,7 +20,6 @@ criteria (happiness, GDP per capita, freedom to make life choices, etc.)
 are most important to them in their choice of a new country and then
 display the most promising results coupled with interpretable graphs and
 key values.
-
 
 ## Description of Data
 
