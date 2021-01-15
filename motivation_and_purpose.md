@@ -1,7 +1,7 @@
 Motivation and Purpose
 ================
 
-Our Role: Data scientists working for an immigration consultancy company
+Our Role: Data scientists working for an immigration consulting company
 
 Target Audience: Families and individuals looking to move to a new
 country.
