@@ -1,7 +1,7 @@
 # Contributing to Dash of Spice
 
 ## Contribution Prerequisites
-We welcome all contributions and feature requests to this project! All contributors must abide by our [code of conduct](<insert link to CoC file). 
+We welcome all contributions and feature requests to this project! All contributors must abide by our [code of conduct](https://github.com/UBC-MDS/dash_of_spice/blob/main/CODE_OF_CONDUCT.md). 
 
 When contributing to this project, please feel free to discuss the change you wish to make via issue, email, or any other method with the maintainers before making a change.
 
