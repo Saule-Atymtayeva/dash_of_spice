@@ -24,6 +24,7 @@ To see the correlation between the key variables mentioned we have obtained the 
 <br />
 Since `Life expectancy` is the highest correlated variable with `Happiness score`, the plot below show that the top 5 countries in the Happiness Ranking (Switzerland, Norway, Iceland, Denmark, and Finland) have the highest life expectancy. At the same time, with a reduction in the indicator of life expectancy, a decrease in the position in the rating is clearly visible. (Figure 2).
 <br />
+<br />
 
 <p align="center">
   <img src="plot2.png" />
