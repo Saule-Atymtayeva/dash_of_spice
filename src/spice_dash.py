@@ -36,7 +36,7 @@ app = dash.Dash(__name__)
 
 app.layout = html.Div([
         html.Iframe(srcDoc=m.get_root().render(),
-        style={'border-width': '0', 'width': '600px', 'height': '600px'})])
+        style={'border-width': '0', 'width': '600px', 'height': '500px'})])
 
 if __name__ == '__main__':
     app.run_server(debug=True)
