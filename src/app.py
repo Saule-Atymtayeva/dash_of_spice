@@ -32,6 +32,7 @@ app.layout = dbc.Container(
                 dbc.Col(html.H1("Plot1"), md=4),
                 dbc.Col(html.H1("Plot2"), md=4),
                 dbc.Col(html.H1("Plot3"), md=4),
+                
             ]
         ),
     ]
