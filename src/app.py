@@ -7,10 +7,11 @@ import pandas as pd
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
+import base64
 
-server = app.server # for heroku
+#server = app.server # for heroku
 
-data_cn = pd.read_csv("../data/processed/cn_tidy.csv")
+data_cn = pd.read_csv("data/processed/cn_tidy.csv")
 test = data_cn
 test["Global_Average"] = "Global Average"
 
@@ -18,12 +19,16 @@ unique_countries = data_cn["Country"].unique()
 country_options = [{"label": c, "value": c} for c in unique_countries]
 
 # for table
-df = pd.read_csv("../data/processed/df_tidy.csv")
+df = pd.read_csv("data/processed/df_tidy.csv")
 df_2020 = df.loc[df['Year'] == 2020]
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # ----------------------------------------------------------------------------------------------
+
+# Images
+image_filename = 'assets/logo.png' 
+encoded_image = base64.b64encode(open(image_filename, 'rb').read())
 
 app.layout = dbc.Container(
     [
@@ -31,7 +36,7 @@ app.layout = dbc.Container(
         # Top screen (logo, years, smiley face)
         dbc.Row(
             [
-                dbc.Col(html.H1("Logo"), md=2),
+                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image)), md=2),
                 dbc.Col(html.H1("Years"), md=8),
                 dbc.Col(html.H1("Smiley Face"), md=2),
             ]
@@ -267,7 +272,7 @@ def country_plot(ycol, country_list):
 # ----------------------------------------------------------------------------------------------
 
 # Import happiness dataset (2020 for now)
-happiness_df = pd.read_csv("../data/processed/extra_clean.csv")
+happiness_df = pd.read_csv("data/processed/extra_clean.csv")
 world_map = alt.topo_feature(data.world_110m.url, "countries")
 # happiness_df = pd.DataFrame(happiness_data)
 
