@@ -8,6 +8,7 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
+server = app.server # for heroku
 
 data_cn = pd.read_csv("../data/processed/cn_tidy.csv")
 test = data_cn
