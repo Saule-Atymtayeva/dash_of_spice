@@ -151,7 +151,7 @@ def update_map(value_health, value_free, value_econ, data=happiness_df):
     ).project(
         type='naturalEarth1'
     ).properties(
-        width=700,
+        width=550,
         height=350
     )
     return map_chart.to_html()
