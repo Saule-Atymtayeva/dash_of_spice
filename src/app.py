@@ -40,7 +40,12 @@ app.layout = dbc.Container(
                     #)
                 ),
 
-                dbc.Col(html.H1("Map"), md=6),
+                dbc.Col(
+                    [
+                        html.Iframe(id='map',
+                                    style={'border-width': '0', 'width': '100%', 'height': '400px'})
+                    ], md = 6
+                ),
 
                 dbc.Col(
                     [
@@ -67,8 +72,9 @@ app.layout = dbc.Container(
 # ----------------------------------------------------------------------------------------------
 
 # Import happiness dataset (2020 for now)
-happiness_data = pd.read_csv("data/raw/2020.csv")
-happiness_df = pd.DataFrame(happiness_data)
+happiness_df = pd.read_csv("data/processed/extra_clean.csv")
+world_map = alt.topo_feature(data.world_110m.url, 'countries')
+#happiness_df = pd.DataFrame(happiness_data)
 
 
 # ----------------------------------------------------------------------------------------------
@@ -80,8 +86,7 @@ happiness_df = pd.DataFrame(happiness_data)
     Input('slider_free', 'value'),
     Input('slider_econ', 'value')
 )
-
-def country_list(value_health, value_free, value_econ, data=happiness_data):
+def country_list(value_health, value_free, value_econ, data=happiness_df):
     data = [['Healthy life expectancy', value_health], ['Freedom to make life choices', value_free], ['Logged GDP per capita', value_econ]]
     country_df = pd.DataFrame(data, columns = ['Measure', 'Value'])
     country_df = country_df.sort_values(by=['Value'], ascending = False)
@@ -97,11 +102,59 @@ def country_list(value_health, value_free, value_econ, data=happiness_data):
     Output('slider_free','value'),
     Output('slider_econ','value'),
     [Input('reset_button','n_clicks')])
-
 def update(reset):
     return 5, 5, 5
 
 # ----------------------------------------------------------------------------------------------
+
+# Map callback
+@app.callback(
+    Output('map', 'srcDoc'),
+    Input('slider_health', 'value'), # add more inputs? but then how do you send them to the function?
+    Input('slider_free', 'value'),
+    Input('slider_econ', 'value'))
+def update_map(value_health, value_free, value_econ, data=happiness_df):
+    map_click = alt.selection_multi(fields=['id'])
+    
+    map_chart = alt.Chart(world_map).mark_geoshape(
+        stroke='black', 
+        strokeWidth=0.5
+    ).transform_lookup(
+        lookup='id',
+        from_=alt.LookupData(
+            data = happiness_df, 
+            key ='id', 
+            fields = [
+                'Country',
+                'Delta_happy',
+                'Happiness_rank'])
+    ).encode(alt.Color(
+        'Delta_happy:Q', 
+        scale = alt.Scale(domain=[0, 10], scheme = "redyellowgreen"),
+        legend = alt.Legend(title = "Happiness")),
+        opacity=alt.condition(map_click, alt.value(1), alt.value(0.2)),
+        tooltip=[
+            alt.Tooltip(
+                field = 'Country',
+                type = 'nominal',
+                title = 'Country'), 
+            alt.Tooltip(
+                field = 'Delta_happy',
+                type = "quantitative",
+                title = 'Happiness'),
+            alt.Tooltip(
+                field = 'Happiness_rank',
+                type = "quantitative",
+                title = 'Rank')]
+    ).add_selection(
+        map_click
+    ).project(
+        type='naturalEarth1'
+    ).properties(
+        width=550,
+        height=350
+    )
+    return map_chart.to_html()
 
 if __name__ == "__main__":
     app.run_server(debug=True)
