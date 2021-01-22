@@ -7,8 +7,7 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
-country_clicked = "Canada"
-data = pd.read_csv("df_tidy.csv")
+data = pd.read_csv("../data/processed/cn_tidy.csv")
 test = data
 test["Global_Average"] = "Global Average"
 
@@ -76,7 +75,8 @@ app.layout = dbc.Container(
                                 ),
                             ]
                         )
-                    ]
+                    ],
+                    md=2.5,
                 ),
                 dbc.Col(
                     html.Label(
@@ -95,7 +95,8 @@ app.layout = dbc.Container(
                                 },
                             ),
                         ]
-                    )
+                    ),
+                    md=3,
                 ),
                 dbc.Col(
                     html.Iframe(
@@ -105,7 +106,8 @@ app.layout = dbc.Container(
                             "width": "400px",
                             "height": "400px",
                         },
-                    )
+                    ),
+                    md=4,
                 ),
             ]
         ),
