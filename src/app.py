@@ -29,16 +29,17 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 # Images
 image_filename = 'assets/logo.png' 
 encoded_image = base64.b64encode(open(image_filename, 'rb').read())
-
+image_filename2 = 'assets/smiley.gif' 
+encoded_image2 = base64.b64encode(open(image_filename2, 'rb').read())
 app.layout = dbc.Container(
     [
         html.H1(),
         # Top screen (logo, years, smiley face)
         dbc.Row(
             [
-                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image)), md=2),
-                dbc.Col(html.H1("Years"), md=8),
-                dbc.Col(html.H1("Smiley Face"), md=2),
+                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), style={'height':'60%', 'width':'20%'})),
+                dbc.Col(html.H1("The Happiness Navigator"), md=6),
+                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image2.decode()), style={'height':'60%', 'width':'20%'})),
             ]
         ),
         # Main screen layout
