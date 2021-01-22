@@ -1,5 +1,6 @@
 import dash
 import dash_html_components as html
+import dash_table
 import altair as alt
 from vega_datasets import data
 import pandas as pd
@@ -15,6 +16,9 @@ test["Global_Average"] = "Global Average"
 unique_countries = data_cn["Country"].unique()
 country_options = [{"label": c, "value": c} for c in unique_countries]
 
+# for table
+df = pd.read_csv("../data/processed/df_tidy.csv")
+df_2020 = df.loc[df['Year'] == 2020]
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -82,14 +86,54 @@ app.layout = dbc.Container(
                     ],
                     md=6,
                 ),
-                dbc.Col(
-                    [
-                        html.H2("Top 5 Countries:"),
-                        dcc.Textarea(id="list_text")
-                        # html.Div(id='result') # Output('result', 'children'),
-                    ]
-                    # html.H1("Top Countries List"), md=3),
-                ),
+                dbc.Col(html.Div([html.H3('Top-5 Countries'),
+                                 dash_table.DataTable(id='table',
+                                                      columns=[{'name': 'Rank', 'id': 'Happiness_rank', 'editable': False, 'selectable': False},
+                                                                {'name': 'Country', 'id': 'Country', 'editable': False},
+                                                                {'name': 'Happiness score', 'id': 'Happiness_score', 'editable': False},
+                                                                {'name': 'GDP per capita', 'id': 'GDP_per_capita', 'editable': False},
+                                                                {'name': 'Social support', 'id': 'Social_support', 'editable': False},
+                                                                {'name': 'Life expectancy', 'id': 'Life_expectancy', 'editable': False},
+                                                                {'name': 'Freedom', 'id': 'Freedom', 'editable': False},
+                                                                {'name': 'Generosity', 'id': 'Generosity', 'editable': False},
+                                                                {'name': 'Corruption', 'id': 'Corruption', 'editable': False},
+                                                                {'name': 'Year', 'id': 'Year', 'editable': False},
+                                                                        ],
+                                                      data=df_2020.to_dict('records'),
+                                                      #fixed_rows={'data': 0},
+                                                      #style_data_conditional=(),
+                                                      style_cell_conditional=[{'if': {'column_id': 'Happiness_score',},
+                                                                                'display': 'None',},
+                                                                                {'if': {'column_id': 'GDP_per_capita',},
+                                                                                'display': 'None',},
+                                                                                {'if': {'column_id': 'Social_support',},
+                                                                                'display': 'None',},
+                                                                                {'if': {'column_id': 'Life_expectancy',},
+                                                                                'display': 'None',},
+                                                                                {'if': {'column_id': 'Freedom',},
+                                                                                'display': 'None',},
+                                                                                {'if': {'column_id': 'Generosity',},
+                                                                                'display': 'None',},
+                                                                                {'if': {'column_id': 'Corruption',},
+                                                                                'display': 'None',},
+                                                                                {'if': {'column_id': 'Year',},
+                                                                                'display': 'None',}],
+                                                      style_table={'height': 280,
+                                                                   'overflowY': 'scroll',
+                                                                   'width': 400,
+                                                                   },
+                                                      style_header = {'display': 'none'},
+                                                      style_cell={'textAlign': 'center',
+                                                                  'backgroundColor':'#FFC14D',
+                                                                  'fontWeight': 'bold',
+                                                                  'font-size': '20px',
+                                                                  'height': 50,
+                                                                  },
+                                                      style_as_list_view=True,
+                                )
+                ]),
+                                width={'size': 2,  "offset": 0, 'order': 3}
+                        ),
             ]
         ),
         # Global metrics and individual country plots
