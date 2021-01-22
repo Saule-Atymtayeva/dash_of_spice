@@ -124,27 +124,27 @@ app.layout = html.Div([
 ])
 # ----------------------------------------------------------------------------------------------
 
-@app.callback(
-    Output(component_id='mybar-1', component_property='figure'),
-    Input(component_id='table', component_property='active_cell')
-)
-def table_to_graph(active_cell):
-    if active_cell is None:
-        df_2020['Happiness_rank'] = '1'
-    elif df_2020[column_id] == 'Country' and active_cell:
-        fig = px.bar(df_2020, x='Country', y='Freedom')
-    return fig
-
-
-
 # @app.callback(
 #     Output(component_id='mybar-1', component_property='figure'),
-#     Input(component_id='table', component_property='derived_virtual_data')
+#     Input(component_id='table', component_property='active_cell')
 # )
-# def table_to_graph(row_data):
-#     df_table = df_2020 if row_data is None else pd.DataFrame(row_data)
-#     fig = px.bar(df_2020, x='Country', y='Freedom')
+# def table_to_graph(active_cell):
+#     if active_cell is None:
+#         df_2020['Happiness_rank'] = '1'
+#     elif df_2020[column_id] == 'Country' and active_cell:
+#         fig = px.bar(df_2020, x='Country', y='Freedom')
 #     return fig
+
+
+
+@app.callback(
+    Output(component_id='mybar-1', component_property='figure'),
+    Input(component_id='table', component_property='derived_virtual_data')
+)
+def table_to_graph(row_data):
+    df_table = df_2020 if row_data is None else pd.DataFrame(row_data)
+    fig = px.bar(df_2020, x='Country', y='Freedom')
+    return fig
 
 # ----------------------------------------------------------------------------------------------
 
