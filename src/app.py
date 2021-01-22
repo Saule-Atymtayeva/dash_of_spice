@@ -281,14 +281,14 @@ world_map = alt.topo_feature(data.world_110m.url, "countries")
 # ----------------------------------------------------------------------------------------------
 
 # Slider Callbacks
-@app.callback(
-    Output(component_id="list_text", component_property="value"),
-    Input(
-        "slider_health", "value"
-    ),  # add more inputs? but then how do you send them to the function?
-    Input("slider_free", "value"),
-    Input("slider_econ", "value"),
-)
+#@app.callback(
+#    Output(component_id="list_text", component_property="value"),
+#    Input(
+#        "slider_health", "value"
+#    ),  # add more inputs? but then how do you send them to the function?
+#    Input("slider_free", "value"),
+#    Input("slider_econ", "value"),
+#)
 def country_list(value_health, value_free, value_econ, data=happiness_df):
     data = [
         ["Healthy life expectancy", value_health],
