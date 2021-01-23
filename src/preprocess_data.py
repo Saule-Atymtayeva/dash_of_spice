@@ -1,11 +1,11 @@
 """
-Author: <>
+Author: Dash-of-Spice
 
-Date: <>
+Date: Jan. 22, 2020
 
-Preprocess raw datasets
+Preprocess raw happiness datasets
 
-Usage: preprocess_data.py
+Usage: preprocess_data.py -i=<input> -o=<output> [-v]
 
 Options:
 -i <input>, --input <input>     Local raw data csv file directory
@@ -17,152 +17,174 @@ import glob
 import pandas as pd
 import numpy as np
 from datetime import datetime
-#from docopt import docopt
-#args = docopt(__doc__)
-
+from docopt import docopt
+args = docopt(__doc__)
 
 def preprocess_data():
-    # Reading the data from csv for 2020
-    df_2020_untidy = pd.read_csv("../data/raw/2020.csv")
-    df_2020_untidy.head()
+    # Starting dataset preprocessing
+    print("\n\n##### preprocess_data: Preprocessing datasets")
+    if verbose: print(f"Running preprocess_data with arguments: \n {args}")
 
-    # Dropping unnecessary columns in 2020.csv
-    df_2020_tidy = df_2020_untidy.drop(df_2020_untidy.columns[[1, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19]], axis=1)
+    # Gather year data csv files
+    raw_csv_year_files = glob.glob(f"{input_dir}/20[0-9][0-9].csv")
 
-    # Adding the `Happiness_rank` column in 2020.csv
-    df_2020_tidy.insert(0, 'Happiness_rank', range(1, 154))
+    # Standardize input columns
+    tidy_dfs = []
+    for untidy_happiness_csv_file in raw_csv_year_files:
+        year = untidy_happiness_csv_file.split(".")[0].split("/")[-1]
+        tidy_dfs.append(wrangle_year_df(pd.read_csv(untidy_happiness_csv_file), year))
 
-    # Adding the `Year` column in 2020.csv
-    df_2020_tidy.insert(0, 'Year', '2020')
+    # Combine year data csvs
+    df_tidy = pd.concat(tidy_dfs, ignore_index=True).round(4)
+    if verbose: df_tidy.info()
 
-    # Renaming the columns in 2020.csv
-    df_2020_tidy = df_2020_tidy.rename(columns={"Country name": "Country", "Ladder score": "Happiness_score",
-                                  "Logged GDP per capita": "GDP_per_capita", "Social support": "Social_support",
-                                  "Healthy life expectancy": "Life_expectancy", "Freedom to make life choices": "Freedom",
-                                  "Generosity": "Generosity", "Perceptions of corruption": "Corruption"}, errors="raise")
-
-    # Reordering the columns in 2020.csv
-    df_2020_tidy = df_2020_tidy[['Country', 'Happiness_rank', 'Happiness_score',
-                                 'GDP_per_capita', 'Social_support', 'Life_expectancy',
-                                 'Freedom', 'Generosity', 'Corruption', 'Year']]
-    df_2020_tidy.info()
-
-    # Reading the data from csv for 2019
-    df_2019_untidy = pd.read_csv("../data/raw/2019.csv")
-    df_2019_untidy.head()
-
-    # Adding the `Year` column in 2019.csv
-    df_2019_untidy.insert(0, 'Year', '2019')
-
-    # Renaming the columns in 2019.csv
-    df_2019_tidy = df_2019_untidy.rename(columns={"Overall rank": "Happiness_rank", "Country or region": "Country", "Score": "Happiness_score",
-                                                  "GDP per capita": "GDP_per_capita", "Social support": "Social_support",
-                                                  "Healthy life expectancy": "Life_expectancy", "Freedom to make life choices": "Freedom",
-                                                  "Generosity": "Generosity", "Perceptions of corruption": "Corruption"}, errors="raise")
-
-    # Reordering the columns in 2019.csv
-    df_2019_tidy = df_2019_tidy[['Country', 'Happiness_rank', 'Happiness_score',
-                                 'GDP_per_capita', 'Social_support', 'Life_expectancy',
-                                 'Freedom', 'Generosity', 'Corruption', 'Year']]
-    df_2019_tidy.info()
-
-    # Reading the data from csv for 2018
-    df_2018_untidy = pd.read_csv("../data/raw/2018.csv")
-    df_2018_untidy.head()
-
-    # Adding the `Year` column in 2018.csv
-    df_2018_untidy.insert(0, 'Year', '2018')
-
-    # Renaming the columns in 2018.csv
-    df_2018_tidy = df_2018_untidy.rename(columns={"Overall rank": "Happiness_rank", "Country or region": "Country", "Score": "Happiness_score",
-                                  "GDP per capita": "GDP_per_capita", "Social support": "Social_support",
-                                  "Healthy life expectancy": "Life_expectancy", "Freedom to make life choices": "Freedom",
-                                  "Generosity": "Generosity", "Perceptions of corruption": "Corruption"}, errors="raise")
-
-    # Reordering the columns in 2018.csv
-    df_2018_tidy = df_2018_tidy[['Country', 'Happiness_rank', 'Happiness_score',
-                                 'GDP_per_capita', 'Social_support', 'Life_expectancy',
-                                 'Freedom', 'Generosity', 'Corruption', 'Year']]
-    df_2018_tidy.info()
-
-    # Reading the data from csv for 2017
-    df_2017_untidy = pd.read_csv("../data/raw/2017.csv")
-    df_2017_untidy.head()
-
-    # Dropping unnecessary columns in 2017.csv
-    df_2017_tidy = df_2017_untidy.drop(df_2017_untidy.columns[[3, 4, 11]], axis=1)
-
-    # Adding the `Year` column in 2017.csv
-    df_2017_tidy.insert(0, 'Year', '2017')
-
-    # Renaming the columns in 2017.csv
-    df_2017_tidy = df_2017_tidy.rename(columns={"Happiness.Rank": "Happiness_rank", "Happiness.Score": "Happiness_score",
-                                  "Economy..GDP.per.Capita.": "GDP_per_capita", "Family": "Social_support",
-                                  "Health..Life.Expectancy.": "Life_expectancy",
-                                  "Trust..Government.Corruption.": "Corruption"}, errors="raise")
-
-    # Reordering the columns in 2017.csv
-    df_2017_tidy = df_2017_tidy[['Country', 'Happiness_rank', 'Happiness_score',
-                            'GDP_per_capita', 'Social_support', 'Life_expectancy',
-                            'Freedom', 'Generosity', 'Corruption', 'Year']]
-    df_2017_tidy.info()
-
-    # Reading the data from csv for 2016
-    df_2016_untidy = pd.read_csv("../data/raw/2016.csv")
-    df_2016_untidy.head()
-
-    # Dropping unnecessary columns in 2016.csv
-    df_2016_tidy = df_2016_untidy.drop(df_2016_untidy.columns[[1, 4, 5, 12]], axis=1)
-
-    # Adding the `Year` column in 2016.csv
-    df_2016_tidy.insert(0, 'Year', '2016')
-
-    # Renaming the columns in 2017.csv
-    df_2016_tidy = df_2016_tidy.rename(columns={"Happiness Rank": "Happiness_rank", "Happiness Score": "Happiness_score",
-                                                "Economy (GDP per Capita)": "GDP_per_capita", "Family": "Social_support",
-                                                "Health (Life Expectancy)": "Life_expectancy",
-                                                "Trust (Government Corruption)": "Corruption"}, errors="raise")
-
-    # Reordering the columns in 2017.csv
-    df_2016_tidy = df_2016_tidy[['Country', 'Happiness_rank', 'Happiness_score',
-                                 'GDP_per_capita', 'Social_support', 'Life_expectancy',
-                                 'Freedom', 'Generosity', 'Corruption', 'Year']]
-    df_2016_tidy.info()
-
-    # Reading the data from csv for 2015
-    df_2015_untidy = pd.read_csv("../data/raw/2015.csv")
-    df_2015_untidy.head()
-
-    # Adding the `Year` column in 2015.csv
-    df_2015_untidy.insert(0, 'Year', '2015')
-
-    # Renaming the columns in 2017.csv
-    df_2015_tidy = df_2015_untidy.rename(columns={"Happiness Rank": "Happiness_rank", "Happiness Score": "Happiness_score",
-                                                  "Economy (GDP per Capita)": "GDP_per_capita", "Family": "Social_support",
-                                                  "Health (Life Expectancy)": "Life_expectancy",
-                                                  "Trust (Government Corruption)": "Corruption"}, errors="raise")
-
-    # Reordering the columns in 2017.csv
-    df_2015_tidy = df_2015_tidy[['Country', 'Happiness_rank', 'Happiness_score',
-                                 'GDP_per_capita', 'Social_support', 'Life_expectancy',
-                                 'Freedom', 'Generosity', 'Corruption', 'Year']]
-    df_2015_tidy.info()
-
-    # Concatenating all dataframes
-    dfs = [df_2015_tidy, df_2016_tidy, df_2017_tidy, df_2018_tidy, df_2019_tidy, df_2020_tidy]
-    df_tidy = pd.concat(dfs, ignore_index=True)
-    df_tidy[['Happiness_score', 'GDP_per_capita',
-             'Social_support', 'Life_expectancy',
-             'Freedom', 'Generosity', 'Corruption']] =  df_tidy[['Happiness_score', 'GDP_per_capita',
-                                                                      'Social_support', 'Life_expectancy',
-                                                                      'Freedom', 'Generosity', 'Corruption']].round(4)
-    df_tidy
+    # Link countries with topojson countries
+    df_tidy = sync_country_names(df_tidy)
 
     # Saving in a csv file
-    df_tidy.to_csv("../data/processed/df_tidy.csv")
+    df_tidy.to_csv("data/processed/df_tidy.csv", index = False)
+
+    print("\n##### preprocess_data: Finished preprocessing")
+
+def wrangle_year_df(year_df, year):
+    # Unfortunately all the year data csvs have different #'s of columns and names...
+    drop_columns_list = []
+    if year == '2015':
+        rename_columns_map = {"Happiness Rank": "Happiness_rank", 
+                              "Happiness Score": "Happiness_score",
+                              "Economy (GDP per Capita)": "GDP_per_capita", 
+                              "Family": "Social_support",
+                              "Health (Life Expectancy)": "Life_expectancy",
+                              "Trust (Government Corruption)": "Corruption"}
+    elif year == '2016':
+        drop_columns_list.append([1, 4, 5, 12])
+        rename_columns_map = {"Happiness Rank": "Happiness_rank", 
+                              "Happiness Score": "Happiness_score",
+                              "Economy (GDP per Capita)": "GDP_per_capita", 
+                              "Family": "Social_support",
+                              "Health (Life Expectancy)": "Life_expectancy",
+                              "Trust (Government Corruption)": "Corruption"}
+    elif year == '2017':
+        drop_columns_list.append([3, 4, 11])
+        rename_columns_map = {"Happiness.Rank": "Happiness_rank", 
+                              "Happiness.Score": "Happiness_score",
+                              "Economy..GDP.per.Capita.": "GDP_per_capita", 
+                              "Family": "Social_support",
+                              "Health..Life.Expectancy.": "Life_expectancy",
+                              "Trust..Government.Corruption.": "Corruption"}
+    elif year == '2018':
+        rename_columns_map = {"Overall rank": "Happiness_rank", 
+                              "Country or region": "Country", 
+                              "Score": "Happiness_score",
+                              "GDP per capita": "GDP_per_capita", 
+                              "Social support": "Social_support",
+                              "Healthy life expectancy": "Life_expectancy", 
+                              "Freedom to make life choices": "Freedom",
+                              "Generosity": "Generosity", 
+                              "Perceptions of corruption": "Corruption"}
+    elif year == '2019':
+        rename_columns_map = {"Overall rank": "Happiness_rank", 
+                              "Country or region": "Country", 
+                              "Score": "Happiness_score",
+                              "GDP per capita": "GDP_per_capita", 
+                              "Social support": "Social_support",
+                              "Healthy life expectancy": "Life_expectancy", 
+                              "Freedom to make life choices": "Freedom",
+                              "Generosity": "Generosity", 
+                              "Perceptions of corruption": "Corruption"}
+    elif year == '2020':
+        drop_columns_list.append([1, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19])
+        # Adding the `Happiness_rank` column in 2020.csv
+        year_df['Happiness_rank'] = range(1, 154)
+        rename_columns_map = {"Country name": "Country", 
+                              "Ladder score": "Happiness_score",
+                              "Logged GDP per capita": "GDP_per_capita", 
+                              "Social support": "Social_support",
+                              "Healthy life expectancy": "Life_expectancy", 
+                              "Freedom to make life choices": "Freedom",
+                              "Generosity": "Generosity", 
+                              "Perceptions of corruption": "Corruption"}
+
+    else:
+        raise Exception(f"Sorry, year value {year} not supported")
+
+    if len(drop_columns_list) > 0:
+        # Dropping unnecessary columns
+        year_df = year_df.drop(year_df.columns[drop_columns_list], axis=1)
+
+    if rename_columns_map:
+        # Renaming the columns
+        year_df = year_df.rename(columns=rename_columns_map, errors="raise")
+
+    # Adding the `Year` column to df
+    year_df['Year'] = year
+
+    # Standardizing column ordering
+    year_df = year_df[['Country', 
+                       'Happiness_rank', 
+                       'Happiness_score',
+                       'GDP_per_capita', 
+                       'Social_support', 
+                       'Life_expectancy',
+                       'Freedom', 
+                       'Generosity', 
+                       'Corruption', 
+                       'Year']]
+    if verbose: year_df.info()
+    return year_df
+
+def sync_country_names(tidy_df):
+    country_ids = pd.read_csv('data/raw/country-ids.csv')
+
+    country_ids = country_ids.append(
+    pd.DataFrame([[48,  'Bahrain'],
+                  [174, 'Comoros'],
+                  [344, 'Hong Kong'],
+                  [462, 'Maldives'],
+                  [470, 'Malta'],
+                  [480, 'Mauritius'],
+                  [702, 'Singapore']], columns = ["id", 'name']), ignore_index=True)
+
+    country_mapper = {
+        r'^Bolivia.*'              : 'Bolivia',
+        r'^Congo$'                 : 'Congo (Kinshasa)',
+        r'^Congo.*Demo.*'          : 'Congo (Brazzaville)',
+        r'^Cote d.*'               : 'Ivory Coast',
+        r'.*Cyprus.*'              : 'Cyprus',
+        r'^Hong Kong.*'            : 'Hong Kong',
+        r'^Iran.*'                 : 'Iran',
+        r'^Korea, R.*'             : 'South Korea',
+        r'^Lao.*'                  : 'Laos',
+        r'.*Macedonia.*'           : 'North Macedonia',
+        r'^Moldova.*'              : 'Moldova',
+        r'^Palestinian Territory.*': 'Palestinian Territories',
+        r'^Russia.*'               : 'Russia',
+        r'^Singapore.*'            : 'Singapore',
+        r'^Syria.*'                : 'Syria',
+        r'^Somali.*'               : 'Somalia',
+        r'^Taiwan.*'               : 'Taiwan',
+        r'^Tanzania.*'             : 'Tanzania',
+        r'^Trinidad & Tobago'      : 'Trinidad and Tobago',
+        r'^Venezuela.*'            : 'Venezuela',
+        r'^Viet.*'                 : 'Vietnam'
+    }
+
+    tidy_df = tidy_df.replace(regex = country_mapper)
+    country_ids = country_ids.replace(regex = country_mapper)
+    combined_df = tidy_df.merge(country_ids, left_on = "Country", right_on = 'name')
+    combined_df = combined_df.drop(columns = 'name')
+    #combined_df['Delta_happy'] = combined_df['Happiness_score']
+    return combined_df
+
+def validate_inputs():
+    assert os.path.exists(input_dir), "Invalid input directory path provided"
+    if not os.path.exists(os.path.dirname(output_filename)):
+        os.makedirs(os.path.dirname(output_filename))
+    assert os.path.exists(os.path.dirname(output_filename)), "Invalid output path provided"
 
 if __name__ == "__main__":
-    #input_dir = args["--input"]
-    #output_filename = args["--output"]
-    #verbose = args["-v"]
+    input_dir = args["--input"]
+    output_filename = args["--output"]
+    verbose = args["-v"]
+    validate_inputs()
     preprocess_data()
