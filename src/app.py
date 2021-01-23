@@ -7,9 +7,9 @@ import pandas as pd
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
+import base64
 
-
-data_cn = pd.read_csv("../data/processed/cn_tidy.csv")
+data_cn = pd.read_csv("data/processed/cn_tidy.csv")
 test = data_cn
 test["Global_Average"] = "Global Average"
 
@@ -17,23 +17,30 @@ unique_countries = data_cn["Country"].unique()
 country_options = [{"label": c, "value": c} for c in unique_countries]
 
 # for table
-df = pd.read_csv("../data/processed/df_tidy.csv")
+df = pd.read_csv("data/processed/df_tidy.csv")
 df_2020 = df.loc[df['Year'] == 2020]
-happiness_df = pd.read_csv("../data/processed/extra_clean.csv")
+happiness_df = pd.read_csv("data/processed/extra_clean.csv")
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
+server = app.server # for heroku
+
 # ----------------------------------------------------------------------------------------------
 
+# Images
+image_filename = 'assets/logo.png'
+encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+image_filename2 = 'assets/smiley.gif'
+encoded_image2 = base64.b64encode(open(image_filename2, 'rb').read())
 app.layout = dbc.Container(
     [
         html.H1(),
         # Top screen (logo, years, smiley face)
         dbc.Row(
             [
-                dbc.Col(html.H1("Logo"), md=2),
-                dbc.Col(html.H1("Years"), md=8),
-                dbc.Col(html.H1("Smiley Face"), md=2),
+                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), style={'height':'60%', 'width':'20%'})),
+                dbc.Col(html.H1("The Happiness Navigator"), md=6),
+                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image2.decode()), style={'height':'60%', 'width':'20%'})),
             ]
         ),
         # Main screen layout
@@ -239,7 +246,7 @@ def country_plot(ycol, country_list):
 # ----------------------------------------------------------------------------------------------
 
 # Import happiness dataset (2020 for now)
-happiness_df = pd.read_csv("../data/processed/extra_clean.csv")
+happiness_df = pd.read_csv("data/processed/extra_clean.csv")
 world_map = alt.topo_feature(data.world_110m.url, "countries")
 # happiness_df = pd.DataFrame(happiness_data)
 
@@ -268,13 +275,13 @@ def country_list(value_health, value_free, value_econ, data=happiness_df):
     filtered_data = data.sort_values(
         by=[col_name], ascending=False
     )  # filter data somehow (sort by whatever value is most important)
-   
+
     country_list = filtered_data.iloc[:, 1]
     hr = filtered_data.iloc[:, 2]
 #    df_table = pd.DataFrame(country_list[0:5], hr[0:5])
-    
+
     df_table = pd.DataFrame({'Happiness_rank':hr[0:5],'Country':country_list[0:5]})
-    
+
     return df_table.to_dict('rows')
 
 #def table_update():
