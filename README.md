@@ -22,3 +22,26 @@ The initial dashboard showing the top 5 countries based on the user's ranking in
 
 The final dashboard showing the rankings of the rest of the countries and the bottom 5 countries after scrolling. Clicking on another country will highlight it with the top country, and clicking the arrows in the plots section will display different feature ranks.
 ![Final Dashboard](img/dos_sketch_b.png)
+
+## What are we doing?
+At Dash of Spice, we aim to provide an easy-to-use application to individuals and families looking to immigrate to a country that aligns best with their values. Our dashboard utilizes a user's key values to suggest countries that would provide maximum happiness if they immigrated there.
+
+The stigma surrounding mental health has been slowing evaporating over the years as more and more people openly talk about their mental struggles and seek help. Families want to raise their kids in a society that promotes happiness, financial security, and a long life expectancy, among other things. Our purpose is to help facilitate the decision making process for people who wish to move to a new country by providing them with an easy to use app that compares countries across the world. We propose using the World Happiness Report as our data set to create this app. Our intent is that an individual will be able to specify what criteria (happiness, GDP per capita, freedom to make life choices, etc.) are most important to them in their choice of a new country and then display the most promising results coupled with interpretable graphs and key values.
+
+### Aims
+- Help facilitate decision making process for immigrants by comparing countries across the world
+- Allow users to specify specific criteria (happiness, GDP per capita, freedom to make life choices, etc.) that are most important to them
+- Display multiple visualizations to show specific criteria comparison for different countries and against a global average
+- Provide an option for a user to view a year progression for specified countries
+
+### Importance
+With the stigma surrounding mental health slowly evaporating and more people are openly discussing their mental struggles and seeking help, there is an increased need for accessible information about achieving maximum happiness. All over the world, people are looking for new adventures and new beginnings in hopes to find a place they can call home. The immigration process can be complicated and difficult, especially with the fast changing pace of society. Our purpose is to help facilitate the decision making process for people wanting to immigrate to a new country.  
+
+## Who are we?
+At Dash of Spice, we are a team of data scientists working for an immigration consulting company. The founders of Dash of Spice - [Rachel]https://github.com/rachelywong), [Saule](https://github.com/Saule-Atymtayeva), [Chad](https://github.com/ChadNeald), and [Craig](https://github.com/cmmclaug) - are friends from the Master of Data Science program at The University of British Columbia. The development of Happy Navvy was made in part of the course DSCI 532 - Data Visualization II. 
+
+## Come join us!
+We are always looking for future improvements and additions. Specifically, we are hoping to integrate an algorithm that incorporates all user specified features to calculate the most accurate happiness ranking of suggested countries for users. 
+
+If you are interested in joining us, please check out our [contribution file](https://github.com/UBC-MDS/dash_of_spice/blob/main/contribution_guidelines.md) for more information! 
+
