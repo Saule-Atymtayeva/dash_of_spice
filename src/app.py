@@ -19,6 +19,7 @@ country_options = [{"label": c, "value": c} for c in unique_countries]
 # for table
 df = pd.read_csv("../data/processed/df_tidy.csv")
 df_2020 = df.loc[df['Year'] == 2020]
+happiness_df = pd.read_csv("../data/processed/extra_clean.csv")
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -87,37 +88,9 @@ app.layout = dbc.Container(
                     md=6,
                 ),
                 dbc.Col(html.Div([html.H3('Top-5 Countries'),
+                                  html.H6('\nHappiness Rank | Country'),
                                  dash_table.DataTable(id='table',
-                                                      columns=[{'name': 'Rank', 'id': 'Happiness_rank', 'editable': False, 'selectable': False},
-                                                                {'name': 'Country', 'id': 'Country', 'editable': False},
-                                                                {'name': 'Happiness score', 'id': 'Happiness_score', 'editable': False},
-                                                                {'name': 'GDP per capita', 'id': 'GDP_per_capita', 'editable': False},
-                                                                {'name': 'Social support', 'id': 'Social_support', 'editable': False},
-                                                                {'name': 'Life expectancy', 'id': 'Life_expectancy', 'editable': False},
-                                                                {'name': 'Freedom', 'id': 'Freedom', 'editable': False},
-                                                                {'name': 'Generosity', 'id': 'Generosity', 'editable': False},
-                                                                {'name': 'Corruption', 'id': 'Corruption', 'editable': False},
-                                                                {'name': 'Year', 'id': 'Year', 'editable': False},
-                                                                        ],
-                                                      data=df_2020.to_dict('records'),
-                                                      #fixed_rows={'data': 0},
-                                                      #style_data_conditional=(),
-                                                      style_cell_conditional=[{'if': {'column_id': 'Happiness_score',},
-                                                                                'display': 'None',},
-                                                                                {'if': {'column_id': 'GDP_per_capita',},
-                                                                                'display': 'None',},
-                                                                                {'if': {'column_id': 'Social_support',},
-                                                                                'display': 'None',},
-                                                                                {'if': {'column_id': 'Life_expectancy',},
-                                                                                'display': 'None',},
-                                                                                {'if': {'column_id': 'Freedom',},
-                                                                                'display': 'None',},
-                                                                                {'if': {'column_id': 'Generosity',},
-                                                                                'display': 'None',},
-                                                                                {'if': {'column_id': 'Corruption',},
-                                                                                'display': 'None',},
-                                                                                {'if': {'column_id': 'Year',},
-                                                                                'display': 'None',}],
+                                                      columns=[{'name': i, 'id': i} for i in happiness_df.loc[:,['Happiness_rank','Country']]],
                                                       style_table={'height': 280,
                                                                    'overflowY': 'scroll',
                                                                    'width': 400,
@@ -275,7 +248,7 @@ world_map = alt.topo_feature(data.world_110m.url, "countries")
 
 # Slider Callbacks
 @app.callback(
-    Output(component_id="list_text", component_property="value"),
+    Output(component_id="table", component_property="data"),
     Input(
         "slider_health", "value"
     ),  # add more inputs? but then how do you send them to the function?
@@ -283,20 +256,28 @@ world_map = alt.topo_feature(data.world_110m.url, "countries")
     Input("slider_econ", "value"),
 )
 def country_list(value_health, value_free, value_econ, data=happiness_df):
-    data = [
-        ["Healthy life expectancy", value_health],
-        ["Freedom to make life choices", value_free],
-        ["Logged GDP per capita", value_econ],
+    data = data.loc[data['Year'] == 2020]
+    user_data = [
+        ["Life_expectancy", value_health],
+        ["Freedom", value_free],
+        ["GDP_per_capita", value_econ],
     ]
-    country_df = pd.DataFrame(data, columns=["Measure", "Value"])
+    country_df = pd.DataFrame(user_data, columns=["Measure", "Value"])
     country_df = country_df.sort_values(by=["Value"], ascending=False)
     col_name = country_df.iloc[0, 0]
-    filtered_data = happiness_df.sort_values(
-        by=[col_name]
+    filtered_data = data.sort_values(
+        by=[col_name], ascending=False
     )  # filter data somehow (sort by whatever value is most important)
+   
+    country_list = filtered_data.iloc[:, 1]
+    hr = filtered_data.iloc[:, 2]
+#    df_table = pd.DataFrame(country_list[0:5], hr[0:5])
+    
+    df_table = pd.DataFrame({'Happiness_rank':hr[0:5],'Country':country_list[0:5]})
+    
+    return df_table.to_dict('rows')
 
-    country_list = filtered_data.iloc[:, 0]
-    return str(country_list[0:5])
+#def table_update():
 
 
 # Reset Button Callback, reset back to 5
@@ -309,7 +290,13 @@ def country_list(value_health, value_free, value_econ, data=happiness_df):
 def update(reset):
     return 5, 5, 5
 
-
+# # Table callback
+# @app.callback(
+#     Output(component_id="table", component_property="value"),
+#     Input(country_list)
+# )
+# def update_table(country_list, data=df_2020):
+#     return str(country_list[0:5])
 # ----------------------------------------------------------------------------------------------
 
 # Map callback
