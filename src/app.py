@@ -9,8 +9,6 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import base64
 
-server = app.server # for heroku
-
 data_cn = pd.read_csv("data/processed/cn_tidy.csv")
 test = data_cn
 test["Global_Average"] = "Global Average"
@@ -23,6 +21,8 @@ df = pd.read_csv("data/processed/df_tidy.csv")
 df_2020 = df.loc[df['Year'] == 2020]
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+server = app.server # for heroku
 
 # ----------------------------------------------------------------------------------------------
 
