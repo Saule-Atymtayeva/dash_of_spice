@@ -19,7 +19,7 @@ country_options = [{"label": c, "value": c} for c in unique_countries]
 # for table
 df = pd.read_csv("data/processed/df_tidy.csv")
 df_2020 = df.loc[df['Year'] == 2020]
-happiness_df = pd.read_csv("../data/processed/extra_clean.csv")
+happiness_df = pd.read_csv("data/processed/extra_clean.csv")
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
