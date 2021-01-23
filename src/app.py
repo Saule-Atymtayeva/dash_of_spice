@@ -272,8 +272,8 @@ def country_list(value_health, value_free, value_econ, data=df):
         by=[col_name], ascending=False
     )  # filter data somehow (sort by whatever value is most important)
 
-    country_list = filtered_data.iloc[:, 1]
-    hr = filtered_data.iloc[:, 2]
+    country_list = filtered_data.iloc[:, 0]
+    hr = filtered_data.iloc[:, 1]
 #    df_table = pd.DataFrame(country_list[0:5], hr[0:5])
 
     df_table = pd.DataFrame({'Happiness_rank':hr[0:5],'Country':country_list[0:5]})
