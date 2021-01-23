@@ -18,8 +18,9 @@ country_options = [{"label": c, "value": c} for c in unique_countries]
 
 # for table
 df = pd.read_csv("data/processed/df_tidy.csv")
+df['Delta_happy'] = df['Happiness_score']
 df_2020 = df.loc[df['Year'] == 2020]
-happiness_df = pd.read_csv("data/processed/extra_clean.csv")
+world_map = alt.topo_feature(data.world_110m.url, "countries")
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
@@ -97,7 +98,7 @@ app.layout = dbc.Container(
                 dbc.Col(html.Div([html.H3('Top-5 Countries'),
                                   html.H6('\nHappiness Rank | Country'),
                                  dash_table.DataTable(id='table',
-                                                      columns=[{'name': i, 'id': i} for i in happiness_df.loc[:,['Happiness_rank','Country']]],
+                                                      columns=[{'name': i, 'id': i} for i in df.loc[:,['Happiness_rank','Country']]],
                                                       style_table={'height': 280,
                                                                    'overflowY': 'scroll',
                                                                    'width': 400,
@@ -245,11 +246,6 @@ def country_plot(ycol, country_list):
 
 # ----------------------------------------------------------------------------------------------
 
-# Import happiness dataset (2020 for now)
-happiness_df = pd.read_csv("data/processed/extra_clean.csv")
-world_map = alt.topo_feature(data.world_110m.url, "countries")
-# happiness_df = pd.DataFrame(happiness_data)
-
 
 # ----------------------------------------------------------------------------------------------
 
@@ -262,7 +258,7 @@ world_map = alt.topo_feature(data.world_110m.url, "countries")
     Input("slider_free", "value"),
     Input("slider_econ", "value"),
 )
-def country_list(value_health, value_free, value_econ, data=happiness_df):
+def country_list(value_health, value_free, value_econ, data=df):
     data = data.loc[data['Year'] == 2020]
     user_data = [
         ["Life_expectancy", value_health],
@@ -315,7 +311,7 @@ def update(reset):
     Input("slider_free", "value"),
     Input("slider_econ", "value"),
 )
-def update_map(value_health, value_free, value_econ, data=happiness_df):
+def update_map(value_health, value_free, value_econ, data=df):
     map_click = alt.selection_multi(fields=["id"])
 
     map_chart = (
@@ -324,7 +320,7 @@ def update_map(value_health, value_free, value_econ, data=happiness_df):
         .transform_lookup(
             lookup="id",
             from_=alt.LookupData(
-                data=happiness_df,
+                data=df,
                 key="id",
                 fields=["Country", "Delta_happy", "Happiness_rank"],
             ),
