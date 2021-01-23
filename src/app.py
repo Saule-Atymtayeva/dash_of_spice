@@ -94,7 +94,7 @@ app.layout = dbc.Container(
                     ],
                     md=6,
                 ),
-                dbc.Col(html.Div([html.H3('Top-5 Countries'),
+                dbc.Col(html.Div([html.H3('Top 5 Countries'),
                                   html.H6('\nHappiness Rank | Country'),
                                  dash_table.DataTable(id='table',
                                                       columns=[{'name': i, 'id': i} for i in happiness_df.loc[:,['Happiness_rank','Country']]],
