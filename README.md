@@ -1,4 +1,8 @@
 # Dash-of-Spice: Happiness Navigator
+
+## Link to Dashboard
+Please find our dashboard [here](https://happy-navvyy.herokuapp.com/).
+
 ## App Description
 
 The Happiness Navigator app dashboard is an interactive visual tool to help users navigate, filter, and compare the [results](https://www.kaggle.com/mathurinache/world-happiness-report) of the [World Happiness Report](https://en.wikipedia.org/wiki/World_Happiness_Report). The report is a survey of citizens from each of the 153 participating countries that attempts to quantify their overall happiness and quality of life over a range of metrics, and then combines this information into a single happiness score.
