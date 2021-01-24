@@ -9,39 +9,48 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import base64
 
-data_cn = pd.read_csv("data/processed/cn_tidy.csv")
-test = data_cn
-test["Global_Average"] = "Global Average"
+data_country_plots = pd.read_csv("data/processed/df_tidy.csv")
+data_country_plots["Global_Average"] = "Global Average"
 
-unique_countries = data_cn["Country"].unique()
+unique_countries = data_country_plots["Country"].unique()
 country_options = [{"label": c, "value": c} for c in unique_countries]
 
 # for table
 df = pd.read_csv("data/processed/df_tidy.csv")
-df['Delta_happy'] = df['Happiness_score']
-df_2020 = df.loc[df['Year'] == 2020]
+df["Delta_happy"] = df["Happiness_score"]
+df_2020 = df.loc[df["Year"] == 2020]
 world_map = alt.topo_feature(data.world_110m.url, "countries")
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-server = app.server # for heroku
+server = app.server  # for heroku
 
 # ----------------------------------------------------------------------------------------------
 
 # Images
-image_filename = 'assets/logo.png'
-encoded_image = base64.b64encode(open(image_filename, 'rb').read())
-image_filename2 = 'assets/smiley.gif'
-encoded_image2 = base64.b64encode(open(image_filename2, 'rb').read())
+image_filename = "assets/logo.png"
+encoded_image = base64.b64encode(open(image_filename, "rb").read())
+image_filename2 = "assets/smiley.gif"
+encoded_image2 = base64.b64encode(open(image_filename2, "rb").read())
 app.layout = dbc.Container(
     [
         html.H1(),
         # Top screen (logo, years, smiley face)
         dbc.Row(
             [
-                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), style={'height':'60%', 'width':'20%'})),
+                dbc.Col(
+                    html.Img(
+                        src="data:image/png;base64,{}".format(encoded_image.decode()),
+                        style={"height": "60%", "width": "20%"},
+                    )
+                ),
                 dbc.Col(html.H1("The Happiness Navigator"), md=6),
-                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image2.decode()), style={'height':'60%', 'width':'20%'})),
+                dbc.Col(
+                    html.Img(
+                        src="data:image/png;base64,{}".format(encoded_image2.decode()),
+                        style={"height": "60%", "width": "20%"},
+                    )
+                ),
             ]
         ),
         # Main screen layout
@@ -95,26 +104,36 @@ app.layout = dbc.Container(
                     ],
                     md=6,
                 ),
-                dbc.Col(html.Div([html.H3('Top 5 Countries'),
-                                  html.H6('\nHappiness Rank | Country'),
-                                 dash_table.DataTable(id='table',
-                                                      columns=[{'name': i, 'id': i} for i in df.loc[:,['Happiness_rank','Country']]],
-                                                      style_table={'height': 280,
-                                                                   'overflowY': 'scroll',
-                                                                   'width': 400,
-                                                                   },
-                                                      style_header = {'display': 'none'},
-                                                      style_cell={'textAlign': 'center',
-                                                                  'backgroundColor':'#FFC14D',
-                                                                  'fontWeight': 'bold',
-                                                                  'font-size': '20px',
-                                                                  'height': 50,
-                                                                  },
-                                                      style_as_list_view=True,
-                                )
-                ]),
-                                width={'size': 2,  "offset": 0, 'order': 3}
-                        ),
+                dbc.Col(
+                    html.Div(
+                        [
+                            html.H3("Top 5 Countries"),
+                            html.H6("\nHappiness Rank | Country"),
+                            dash_table.DataTable(
+                                id="table",
+                                columns=[
+                                    {"name": i, "id": i}
+                                    for i in df.loc[:, ["Happiness_rank", "Country"]]
+                                ],
+                                style_table={
+                                    "height": 280,
+                                    "overflowY": "scroll",
+                                    "width": 400,
+                                },
+                                style_header={"display": "none"},
+                                style_cell={
+                                    "textAlign": "center",
+                                    "backgroundColor": "#FFC14D",
+                                    "fontWeight": "bold",
+                                    "font-size": "20px",
+                                    "height": 50,
+                                },
+                                style_as_list_view=True,
+                            ),
+                        ]
+                    ),
+                    width={"size": 2, "offset": 0, "order": 3},
+                ),
             ]
         ),
         # Global metrics and individual country plots
@@ -124,7 +143,7 @@ app.layout = dbc.Container(
                     [
                         html.Label(
                             [
-                                "Choose your y-axis feature!",
+                                "Choose your happiness navigator!",
                                 dcc.Dropdown(
                                     id="yaxis_feature",
                                     value="Happiness_score",
@@ -186,8 +205,8 @@ app.layout = dbc.Container(
                         id="country_plot",
                         style={
                             "border-width": "0",
-                            "width": "400px",
-                            "height": "400px",
+                            "width": "300px",
+                            "height": "300px",
                         },
                     ),
                     md=4,
@@ -196,58 +215,6 @@ app.layout = dbc.Container(
         ),
     ]
 )
-
-
-@app.callback(
-    Output("country_plot", "srcDoc"),
-    Input("yaxis_feature", "value"),
-    Input("country_drop_down", "value"),
-)
-def country_plot(ycol, country_list):
-    yaxis_title = ycol.split("_")
-    yaxis_title = " ".join(yaxis_title)
-    graph_width = 200
-    graph_height = 200
-    # Global average line
-    global_avg = (
-        alt.Chart(test)
-        .mark_line()
-        .encode(
-            x=alt.X("Year:O"),
-            y=alt.Y(f"mean({ycol})", scale=alt.Scale(zero=False)),
-            color=alt.value("black"),
-            opacity=alt.Opacity("Global_Average", legend=alt.Legend(title="")),
-        )
-        .properties(width=graph_width, height=graph_height)
-    )
-
-    # One or more country lines
-    country_comparison = (
-        alt.Chart(data_cn[data_cn["Country"].isin(country_list)])
-        .mark_line()
-        .encode(
-            x=alt.X("Year:O"),
-            y=alt.Y(ycol, scale=alt.Scale(zero=False), title=f"{yaxis_title}"),
-            color=alt.Color("Country", title=""),
-        )
-    )
-
-    # If no countries are selected, only plot the global average
-    if len(country_list) == 0:
-        return global_avg.to_html()
-
-    # If one or more countries are selected, plot them with the global average
-    else:
-        chart = (global_avg + country_comparison).properties(
-            width=graph_width, height=graph_height
-        )
-        return chart.to_html()
-
-
-# ----------------------------------------------------------------------------------------------
-
-
-# ----------------------------------------------------------------------------------------------
 
 # Slider Callbacks
 @app.callback(
@@ -259,7 +226,7 @@ def country_plot(ycol, country_list):
     Input("slider_econ", "value"),
 )
 def country_list(value_health, value_free, value_econ, data=df):
-    data = data.loc[data['Year'] == 2020]
+    data = data.loc[data["Year"] == 2020]
     user_data = [
         ["Life_expectancy", value_health],
         ["Freedom", value_free],
@@ -274,13 +241,11 @@ def country_list(value_health, value_free, value_econ, data=df):
 
     country_list = filtered_data.iloc[:, 0]
     hr = filtered_data.iloc[:, 1]
-#    df_table = pd.DataFrame(country_list[0:5], hr[0:5])
+    #    df_table = pd.DataFrame(country_list[0:5], hr[0:5])
 
-    df_table = pd.DataFrame({'Happiness_rank':hr[0:5],'Country':country_list[0:5]})
+    df_table = pd.DataFrame({"Happiness_rank": hr[0:5], "Country": country_list[0:5]})
 
-    return df_table.to_dict('rows')
-
-#def table_update():
+    return df_table.to_dict("rows")
 
 
 # Reset Button Callback, reset back to 5
@@ -293,26 +258,42 @@ def country_list(value_health, value_free, value_econ, data=df):
 def update(reset):
     return 5, 5, 5
 
-# # Table callback
-# @app.callback(
-#     Output(component_id="table", component_property="value"),
-#     Input(country_list)
-# )
-# def update_table(country_list, data=df_2020):
-#     return str(country_list[0:5])
-# ----------------------------------------------------------------------------------------------
 
-# Map callback
+# Link and plot the map and country plot
 @app.callback(
-    Output("map", "srcDoc"),
+    Output("country_plot", "srcDoc"),
+    Input("yaxis_feature", "value"),
+    Input("country_drop_down", "value"),
     Input(
         "slider_health", "value"
     ),  # add more inputs? but then how do you send them to the function?
     Input("slider_free", "value"),
     Input("slider_econ", "value"),
 )
-def update_map(value_health, value_free, value_econ, data=df):
-    map_click = alt.selection_multi(fields=["id"])
+def country_plot(ycol, country_list, value_health, value_free, value_econ, data=df):
+
+    data_sliders = data.loc[data["Year"] == 2020]
+    user_data = [
+        ["Life_expectancy", value_health],
+        ["Freedom", value_free],
+        ["GDP_per_capita", value_econ],
+    ]
+    country_df = pd.DataFrame(user_data, columns=["Measure", "Value"])
+    country_df = country_df.sort_values(by=["Value"], ascending=False)
+    col_name = country_df.iloc[0, 0]
+    filtered_data = data_sliders.sort_values(
+        by=[col_name], ascending=False
+    )  # filter data somehow (sort by whatever value is most important)
+
+    country_selections = filtered_data.iloc[:, 0]
+    country_selections = country_selections[0:5]
+
+    # Create the map object
+    presets = [
+        {"id": value}
+        for value in data[data["Country"].isin(country_selections)]["id"].unique()
+    ]
+    map_click = alt.selection_multi(fields=["id"], init=presets)
 
     map_chart = (
         alt.Chart(world_map)
@@ -344,7 +325,47 @@ def update_map(value_health, value_free, value_econ, data=df):
         .project(type="naturalEarth1")
         .properties(width=550, height=350)
     )
-    return map_chart.to_html()
+
+    # Create the plot objects
+    yaxis_title = ycol.split("_")
+    yaxis_title = " ".join(yaxis_title)
+    graph_width = 550
+    graph_height = 350
+
+    # One or more country lines
+    country_comparison_from_map = (
+        alt.Chart(data)
+        .mark_line()
+        .encode(
+            x=alt.X("Year:O"),
+            y=alt.Y(ycol, scale=alt.Scale(zero=False), title=f"{yaxis_title}"),
+            color=alt.Color("Country", title=""),
+        )
+        .transform_filter(map_click)
+        .properties(width=graph_width, height=graph_height)
+    )
+
+    # This will plot the searched countries regardless of what is clicked on the map
+    country_comparison_from_search = (
+        alt.Chart(data_country_plots[data_country_plots["Country"].isin(country_list)])
+        .mark_line()
+        .encode(
+            x=alt.X("Year:O"),
+            y=alt.Y(ycol, scale=alt.Scale(zero=False), title=f"{yaxis_title}"),
+            color=alt.Color("Country", title=""),
+        )
+        .properties(width=graph_width, height=graph_height)
+    )
+
+    # If no countries are selected, only plot the global average
+    if len(country_list) == 0:
+        return (map_chart).to_html()
+
+    # If one or more countries are selected, plot them with the global average
+    else:
+        return (
+            map_chart & (country_comparison_from_map + country_comparison_from_search)
+        ).to_html()
 
 
 if __name__ == "__main__":
