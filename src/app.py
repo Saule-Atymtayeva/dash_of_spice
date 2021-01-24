@@ -165,11 +165,12 @@ app.layout = dbc.Container(
                     ],
                     md=6,
                 ),
-                dbc.Col(html.Div([html.H3('Top 5 Countries'),
+                dbc.Col(html.Div([html.H3('Top 10 Countries'),
                                   dash_table.DataTable(id = 'top_5_table', 
-                                                       style={'textAlign' : 'center'})
+                                                       style_cell={'backgroundColor':'#FFFF00',
+                                                                   'textAlign' : 'center'})
                     ]),
-                                width={'size': 2,  "offset": 0, 'order': 3}
+                                width={'size': 3,  "offset": 0, 'order': 3}
                 ),
             ]
         ),
@@ -204,8 +205,8 @@ def country_list(value_health, value_free, value_econ, data=df):
     hr = filtered_data.iloc[:, 1]
 #    df_table = pd.DataFrame(country_list[0:5], hr[0:5])
 
-    df_table = pd.DataFrame({'Rank' : hr[0:5],
-                             'Country' : country_list[0:5]})
+    df_table = pd.DataFrame({'Rank' : hr[0:10],
+                             'Country' : country_list[0:10]})
 
     cols = [{'name': i, 'id': i} for i in df_table.columns]
     data = df_table.to_dict('rows')
