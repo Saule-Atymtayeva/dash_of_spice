@@ -26,8 +26,6 @@ The final dashboard showing the rankings of the rest of the countries and the bo
 ## What are we doing?
 At Dash of Spice, we aim to provide an easy-to-use application to individuals and families looking to immigrate to a country that aligns best with their values. Our dashboard utilizes a user's key values to suggest countries that would provide maximum happiness if they immigrated there.
 
-The stigma surrounding mental health has been slowing evaporating over the years as more and more people openly talk about their mental struggles and seek help. Families want to raise their kids in a society that promotes happiness, financial security, and a long life expectancy, among other things. Our purpose is to help facilitate the decision making process for people who wish to move to a new country by providing them with an easy to use app that compares countries across the world. We propose using the World Happiness Report as our data set to create this app. Our intent is that an individual will be able to specify what criteria (happiness, GDP per capita, freedom to make life choices, etc.) are most important to them in their choice of a new country and then display the most promising results coupled with interpretable graphs and key values.
-
 ### Aims
 - Help facilitate decision making process for immigrants by comparing countries across the world
 - Allow users to specify specific criteria (happiness, GDP per capita, freedom to make life choices, etc.) that are most important to them
