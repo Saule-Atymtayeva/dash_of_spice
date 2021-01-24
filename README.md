@@ -16,12 +16,12 @@ On the bottom of the dashboard are a row of distribution plots for each quality 
 ## App Sketch
 
 The initial dashboard showing the top 5 countries based on the user's ranking inputs:
-![Initial Dashboard](img/dos_sketch_a.png)
+![Initial Dashboard](assets/dos_sketch_a.png)
 
 >
 
 The final dashboard showing the rankings of the rest of the countries and the bottom 5 countries after scrolling. Clicking on another country will highlight it with the top country, and clicking the arrows in the plots section will display different feature ranks.
-![Final Dashboard](img/dos_sketch_b.png)
+![Final Dashboard](assets/dos_sketch_b.png)
 
 ## What are we doing?
 At Dash of Spice, we aim to provide an easy-to-use application to individuals and families looking to immigrate to a country that aligns best with their values. Our dashboard utilizes a user's key values to suggest countries that would provide maximum happiness if they immigrated there.

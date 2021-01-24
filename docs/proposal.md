@@ -38,7 +38,7 @@ To see the correlation between the key variables mentioned we have obtained the 
 <br />
 
 <p align="center">
-  <img src="../img/plot1.png" />
+  <img src="../assets/plot1.png" />
   <br>
   <em>Figure 1. The correlation between the key variables</em>
 </p>
@@ -50,7 +50,7 @@ Since `Life expectancy` is the highest correlated variable with `Happiness score
 <br />
 
 <p align="center">
-  <img src="../img/plot2.png" />
+  <img src="../assets/plot2.png" />
   <br>
   <em>Figure 2. The dependence of happiness rank on life expectancy</em>
 </p>
