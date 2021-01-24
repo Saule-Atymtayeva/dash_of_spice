@@ -39,9 +39,9 @@ app.layout = dbc.Container(
         # Top screen (logo, years, smiley face)
         dbc.Row(
             [
-                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), style={'height':'60%', 'width':'20%'})),
+                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), style={'height':'60%', 'width':'20%'}), md=4),
                 dbc.Col(html.H1("The Happiness Navigator"), md=6),
-                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image2.decode()), style={'height':'60%', 'width':'20%'})),
+                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image2.decode()), style={'align': 'end', 'justify': 'end', 'height':'60%', 'width':'20%'}), md=2),
             ]
         ),
         # Main screen layout
@@ -50,7 +50,7 @@ app.layout = dbc.Container(
                 dbc.Col(
                     # slider = dbc.FormGroup(
                     [
-                        html.H2("World Happiness Rankings:"),
+                        html.H2("Happiness Metrics:"),
                         dbc.Label("Health"),
                         dcc.Slider(
                             id="slider_health",
@@ -96,22 +96,7 @@ app.layout = dbc.Container(
                     md=6,
                 ),
                 dbc.Col(html.Div([html.H3('Top 5 Countries'),
-                                  html.H6('\nHappiness Rank | Country'),
-                                 dash_table.DataTable(id='table',
-                                                      columns=[{'name': i, 'id': i} for i in df.loc[:,['Happiness_rank','Country']]],
-                                                      style_table={'height': 280,
-                                                                   'overflowY': 'scroll',
-                                                                   'width': 400,
-                                                                   },
-                                                      style_header = {'display': 'none'},
-                                                      style_cell={'textAlign': 'center',
-                                                                  'backgroundColor':'#FFC14D',
-                                                                  'fontWeight': 'bold',
-                                                                  'font-size': '20px',
-                                                                  'height': 50,
-                                                                  },
-                                                      style_as_list_view=True,
-                                )
+                                  dash_table.DataTable(id = 'top_5_table')
                 ]),
                                 width={'size': 2,  "offset": 0, 'order': 3}
                         ),
@@ -251,7 +236,8 @@ def country_plot(ycol, country_list):
 
 # Slider Callbacks
 @app.callback(
-    Output(component_id="table", component_property="data"),
+    Output('top_5_table', 'data'),
+    Output('top_5_table', 'columns'),
     Input(
         "slider_health", "value"
     ),  # add more inputs? but then how do you send them to the function?
@@ -276,9 +262,13 @@ def country_list(value_health, value_free, value_econ, data=df):
     hr = filtered_data.iloc[:, 1]
 #    df_table = pd.DataFrame(country_list[0:5], hr[0:5])
 
-    df_table = pd.DataFrame({'Happiness_rank':hr[0:5],'Country':country_list[0:5]})
+    df_table = pd.DataFrame({'Rank' : hr[0:5],
+                             'Country' : country_list[0:5]})
 
-    return df_table.to_dict('rows')
+    cols = [{'name': i, 'id': i} for i in df_table.columns]
+    data = df_table.to_dict('rows')
+
+    return data, cols #df_table.to_dict('rows')
 
 #def table_update():
 
@@ -311,8 +301,28 @@ def update(reset):
     Input("slider_free", "value"),
     Input("slider_econ", "value"),
 )
-def update_map(value_health, value_free, value_econ, data=df):
-    map_click = alt.selection_multi(fields=["id"])
+def slider_map_callback(value_health, value_free, value_econ, data=df):
+    data = data.loc[data['Year'] == 2020]
+    user_data = [
+        ["Life_expectancy", value_health],
+        ["Freedom", value_free],
+        ["GDP_per_capita", value_econ],
+    ]
+    country_df = pd.DataFrame(user_data, columns=["Measure", "Value"])
+    country_df = country_df.sort_values(by=["Value"], ascending=False)
+    col_name = country_df.iloc[0, 0]
+    filtered_data = data.sort_values(
+        by=[col_name], ascending=False
+    )  # filter data somehow (sort by whatever value is most important)
+
+    country_list = filtered_data.iloc[:, 0]
+    return update_map(df, country_list[0:5])
+
+def update_map(new_data, selections):
+    print(selections)
+    presets = [{"id": value} for value in df[df['Country'].isin(selections)]['id'].unique()] 
+    map_click = alt.selection_multi(fields=['id'], init=presets)
+    #map_click = alt.selection_multi(fields=["id"])
 
     map_chart = (
         alt.Chart(world_map)
@@ -320,7 +330,7 @@ def update_map(value_health, value_free, value_econ, data=df):
         .transform_lookup(
             lookup="id",
             from_=alt.LookupData(
-                data=df,
+                data=new_data,
                 key="id",
                 fields=["Country", "Delta_happy", "Happiness_rank"],
             ),
