@@ -38,19 +38,34 @@ app.layout = dbc.Container(
         # Top screen (logo, years, smiley face)
         dbc.Row(
             [
-                dbc.Col(
-                    html.Img(
-                        src="data:image/png;base64,{}".format(encoded_image.decode()),
-                        style={"height": "60%", "width": "20%"},
-                    )
-                ),
+                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()), style={'height':'60%', 'width':'20%'}), md=4),
                 dbc.Col(html.H1("The Happiness Navigator"), md=6),
+                dbc.Col(html.Img(src='data:image/png;base64,{}'.format(encoded_image2.decode()), style={'align': 'end', 'justify': 'end', 'height':'60%', 'width':'20%'}), md=2),
+            ]
+        ),
+        dbc.Row(
+            [
                 dbc.Col(
-                    html.Img(
-                        src="data:image/png;base64,{}".format(encoded_image2.decode()),
-                        style={"height": "60%", "width": "20%"},
-                    )
-                ),
+                    html.Label(
+                        [
+                            "Choose your countries!",
+                            dcc.Dropdown(
+                                id="country_drop_down",
+                                options=country_options,
+                                value=["Canada", "United States"],
+                                multi=True,
+                                style={
+                                    "verticalAlign": "middle",
+                                    "border-width": "10",
+                                    "width": "100%",
+                                    "height": "20px",
+                                    "margin": "10px",
+                                },
+                            ),
+                        ]
+                    ),
+                    width={"size": 6, "offset": 4},
+                )
             ]
         ),
         # Main screen layout
@@ -59,7 +74,7 @@ app.layout = dbc.Container(
                 dbc.Col(
                     # slider = dbc.FormGroup(
                     [
-                        html.H2("World Happiness Rankings:"),
+                        html.H2("Happiness Metrics:"),
                         dbc.Label("Health"),
                         dcc.Slider(
                             id="slider_health",
@@ -87,60 +102,18 @@ app.layout = dbc.Container(
                             value=5,
                             marks={0: "0", 5: "5", 10: "10"},
                         ),
-                        html.Button("Reset", id="reset_button", n_clicks=0),
-                    ]
-                    # )
-                ),
-                dbc.Col(
-                    [
-                        html.Iframe(
-                            id="map",
-                            style={
-                                "border-width": "0",
-                                "width": "100%",
-                                "height": "400px",
-                            },
-                        )
-                    ],
-                    md=6,
-                ),
-                dbc.Col(
-                    html.Div(
-                        [
-                            html.H3("Top 5 Countries"),
-                            html.H6("\nHappiness Rank | Country"),
-                            dash_table.DataTable(
-                                id="table",
-                                columns=[
-                                    {"name": i, "id": i}
-                                    for i in df.loc[:, ["Happiness_rank", "Country"]]
-                                ],
-                                style_table={
-                                    "height": 280,
-                                    "overflowY": "scroll",
-                                    "width": 400,
-                                },
-                                style_header={"display": "none"},
-                                style_cell={
-                                    "textAlign": "center",
-                                    "backgroundColor": "#FFC14D",
-                                    "fontWeight": "bold",
-                                    "font-size": "20px",
-                                    "height": 50,
-                                },
-                                style_as_list_view=True,
-                            ),
-                        ]
-                    ),
-                    width={"size": 2, "offset": 0, "order": 3},
-                ),
-            ]
-        ),
-        # Global metrics and individual country plots
-        dbc.Row(
-            [
-                dbc.Col(
-                    [
+                        html.Button("Reset", id="reset_button", n_clicks=0,              
+                                style={
+                                    "backgroundColor": '#FFFF00',
+                                    'horizonalAlign': 'center',
+                                    "verticalAlign": "center",
+                                    "border-width": "10",
+                                    "width": "80%",
+                                    "height": "40px",
+                                    "margin": "10px",
+                                },),
+                        html.Br(),
+                        html.Br(),
                         html.Label(
                             [
                                 "Choose your happiness navigator!",
@@ -172,44 +145,32 @@ app.layout = dbc.Container(
                                         "border-width": "10",
                                         "width": "200px",
                                         "height": "20px",
-                                        "margin": "0px",
+                                        "margin": "10px",
                                     },
                                 ),
                             ]
                         )
+                    ]
+                ),
+                dbc.Col(
+                    [
+                        html.Iframe(
+                            id="country_plot",
+                            style={
+                                "border-width": "0",
+                                "width": "100%",
+                                "height": "600px",
+                            },
+                        )
                     ],
-                    md=2.5,
+                    md=6,
                 ),
-                dbc.Col(
-                    html.Label(
-                        [
-                            "Choose your countries!",
-                            dcc.Dropdown(
-                                id="country_drop_down",
-                                options=country_options,
-                                value=["Canada", "United States"],
-                                multi=True,
-                                style={
-                                    "border-width": "10",
-                                    "width": "200px",
-                                    "height": "20px",
-                                    "margin": "0px",
-                                },
-                            ),
-                        ]
-                    ),
-                    md=3,
-                ),
-                dbc.Col(
-                    html.Iframe(
-                        id="country_plot",
-                        style={
-                            "border-width": "0",
-                            "width": "300px",
-                            "height": "300px",
-                        },
-                    ),
-                    md=4,
+                dbc.Col(html.Div([html.H3('Top 10 Countries'),
+                                  dash_table.DataTable(id = 'top_5_table', 
+                                                       style_cell={'backgroundColor':'#FFFF00',
+                                                                   'textAlign' : 'center'})
+                    ]),
+                                width={'size': 3,  "offset": 0, 'order': 3}
                 ),
             ]
         ),
@@ -218,7 +179,8 @@ app.layout = dbc.Container(
 
 # Slider Callbacks
 @app.callback(
-    Output(component_id="table", component_property="data"),
+    Output('top_5_table', 'data'),
+    Output('top_5_table', 'columns'),
     Input(
         "slider_health", "value"
     ),  # add more inputs? but then how do you send them to the function?
@@ -241,9 +203,15 @@ def country_list(value_health, value_free, value_econ, data=df):
 
     country_list = filtered_data.iloc[:, 0]
     hr = filtered_data.iloc[:, 1]
-    #    df_table = pd.DataFrame(country_list[0:5], hr[0:5])
+#    df_table = pd.DataFrame(country_list[0:5], hr[0:5])
 
-    df_table = pd.DataFrame({"Happiness_rank": hr[0:5], "Country": country_list[0:5]})
+    df_table = pd.DataFrame({'Rank' : hr[0:10],
+                             'Country' : country_list[0:10]})
+
+    cols = [{'name': i, 'id': i} for i in df_table.columns]
+    data = df_table.to_dict('rows')
+
+    return data, cols #df_table.to_dict('rows')
 
     return df_table.to_dict("rows")
 
@@ -323,14 +291,15 @@ def country_plot(ycol, country_list, value_health, value_free, value_econ, data=
         )
         .add_selection(map_click)
         .project(type="naturalEarth1")
-        .properties(width=550, height=350)
+        .properties(width=400, height=300)
     )
 
     # Create the plot objects
+    print(ycol)
     yaxis_title = ycol.split("_")
     yaxis_title = " ".join(yaxis_title)
-    graph_width = 550
-    graph_height = 350
+    graph_width = 350
+    graph_height = 200
 
     # One or more country lines
     country_comparison_from_map = (
@@ -359,12 +328,12 @@ def country_plot(ycol, country_list, value_health, value_free, value_econ, data=
 
     # If no countries are selected, only plot the global average
     if len(country_list) == 0:
-        return (map_chart).to_html()
+        return ((map_chart).configure_view(strokeOpacity=0)).to_html()
 
     # If one or more countries are selected, plot them with the global average
     else:
         return (
-            map_chart & (country_comparison_from_map + country_comparison_from_search)
+            (map_chart & (country_comparison_from_map + country_comparison_from_search)).configure_view(strokeOpacity=0)
         ).to_html()
 
 
